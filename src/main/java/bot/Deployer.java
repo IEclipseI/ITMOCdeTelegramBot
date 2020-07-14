@@ -39,6 +39,7 @@ public class Deployer {
     }
 
     private static void handleRequest(HttpExchange exchange) throws IOException {
+
         URI requestURI = exchange.getRequestURI();
         String response = "This is the response at " + requestURI;
         exchange.sendResponseHeaders(200, response.getBytes().length);
