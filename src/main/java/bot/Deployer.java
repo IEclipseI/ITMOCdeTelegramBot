@@ -14,7 +14,7 @@ public class Deployer {
     private static final Logger logger = LogManager.getLogger(Rosmira.class);
 
     public static void main(String[] args) {
-        logger.info("Maven works for Rosmira!!!");
+        logger.info("App started");
 
         ApiContextInitializer.init();
 
@@ -26,12 +26,14 @@ public class Deployer {
             e.printStackTrace();
         }
 
-        try (ServerSocket serverSocket = new ServerSocket(Integer.valueOf(System.getenv("PORT")))) {
+        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(System.getenv("PORT")))) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
+                logger.info("Socket binded: " + clientSocket.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        logger.info("App down");
     }
 }
