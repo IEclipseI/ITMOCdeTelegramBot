@@ -19,7 +19,7 @@ public class Rosmira extends TelegramLongPollingBot {
             System.out.println("update = " + update.getEditedMessage().hasText());
         if (update.hasEditedMessage() && update.getEditedMessage().hasText()) {
             SendMessage sendMessage = new SendMessage()
-                    .setChatId(update.getMessage().getChatId())
+                    .setChatId(update.getEditedMessage().getChatId())
                     .setText(update.getEditedMessage().getText())
                     .setReplyToMessageId(update.getEditedMessage().getMessageId());
             try {
