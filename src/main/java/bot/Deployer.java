@@ -1,7 +1,7 @@
 package bot;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -15,7 +15,6 @@ public class Deployer {
 
     public static void main(String[] args) {
         logger.info("Maven works for Rosmira!!!");
-        System.out.println("println qwerty!!!");
 
         ApiContextInitializer.init();
 
