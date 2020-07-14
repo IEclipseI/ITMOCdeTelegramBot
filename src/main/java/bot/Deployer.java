@@ -1,7 +1,6 @@
 package bot;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -10,12 +9,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+@Log4j2
 public class Deployer {
-    private static final Logger logger = LogManager.getLogger(Rosmira.class);
-
     public static void main(String[] args) {
-        logger.info("App started");
-
+        log.info("App started");
         ApiContextInitializer.init();
 
         TelegramBotsApi botsApi = new TelegramBotsApi();
@@ -30,12 +27,13 @@ public class Deployer {
             while (true) {
                 //Hack for Heroku, need reworking
                 Socket clientSocket = serverSocket.accept();
+                clientSocket.getOutputStream().write(200);
                 clientSocket.close();
-                logger.info("Socket closed: " + clientSocket.toString());
+                log.info("Socket closed: " + clientSocket.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        logger.info("App down");
+        log.info("App down");
     }
 }
