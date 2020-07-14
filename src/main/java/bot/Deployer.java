@@ -1,15 +1,17 @@
 package bot;
 
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import lombok.extern.log4j.Log4j2;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URI;
 
 @Log4j2
 public class Deployer {
@@ -25,28 +27,23 @@ public class Deployer {
             e.printStackTrace();
         }
 
-        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(System.getenv("PORT")))) {
-            while (true) {
-                //Hack for Heroku, need reworking
-                try (Socket clientSocket = serverSocket.accept()) {
-                    try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
-//                        String word = in.readLine(); // ждём пока клиент что-нибудь нам напишет
-                        System.out.println("YEEEEEEEEEEEEEEEEEEEEEEEH");
-                        // не долго думая отвечает клиенту
-                        String response = "HTTP/1.1 200 OK\n"
-                                + "Content-Type: text/html\n"
-                                + "Content-Length: 11\n"
-                                + "\n"
-                                + "hello world";
-                        out.write(response);
-                        out.flush(); // выталкиваем все из буфера
-                        log.info("Socket closed: " + clientSocket.toString());
-                    }
-                }
-            }
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(Integer.parseInt(System.getenv("PORT"))), 20);
+            HttpContext context = server.createContext("/");
+            context.setHandler(Deployer::handleRequest);
+            server.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
         log.info("App down");
+    }
+
+    private static void handleRequest(HttpExchange exchange) throws IOException {
+        URI requestURI = exchange.getRequestURI();
+        String response = "This is the response at " + requestURI;
+        exchange.sendResponseHeaders(200, response.getBytes().length);
+        OutputStream os = exchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
     }
 }
