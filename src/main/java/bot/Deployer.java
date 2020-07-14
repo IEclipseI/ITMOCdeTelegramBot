@@ -29,10 +29,10 @@ public class Deployer {
                 try (Socket clientSocket = serverSocket.accept()) {
                     try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                          BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
-                        String word = in.readLine(); // ждём пока клиент что-нибудь нам напишет
-                        System.out.println(word);
+//                        String word = in.readLine(); // ждём пока клиент что-нибудь нам напишет
+                        System.out.println("YEEEEEEEEEEEEEEEEEEEEEEEH");
                         // не долго думая отвечает клиенту
-                        out.write("Привет, это Сервер! Подтверждаю, вы написали : " + word + "\n");
+                        out.write("Привет, это Сервер! Подтверждаю, вы написали : " + "\n");
                         out.flush(); // выталкиваем все из буфера
                         log.info("Socket closed: " + clientSocket.toString());
                     }
