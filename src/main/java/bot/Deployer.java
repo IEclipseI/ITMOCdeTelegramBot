@@ -28,8 +28,10 @@ public class Deployer {
 
         try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(System.getenv("PORT")))) {
             while (true) {
+                //Hack for Heroku, need reworking
                 Socket clientSocket = serverSocket.accept();
-                logger.info("Socket binded: " + clientSocket.toString());
+                clientSocket.close();
+                logger.info("Socket closed: " + clientSocket.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();

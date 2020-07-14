@@ -27,6 +27,7 @@ public class Rosmira extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         }
+
     }
 
     @Override
