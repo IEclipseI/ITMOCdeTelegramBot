@@ -14,6 +14,9 @@ public class Rosmira extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         log.debug("Received update: " + update);
+        System.out.println("update.hasEditedMessage() = " + update.hasEditedMessage());
+        if (update.hasEditedMessage())
+            System.out.println("update = " + update.getEditedMessage().hasText());
         if (update.hasEditedMessage() && update.getEditedMessage().hasText()) {
             SendMessage sendMessage = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
