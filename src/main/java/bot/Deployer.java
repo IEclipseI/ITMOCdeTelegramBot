@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -27,7 +28,8 @@ public class Deployer {
             while (true) {
                 //Hack for Heroku, need reworking
                 Socket clientSocket = serverSocket.accept();
-                clientSocket.getOutputStream().write(200);
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                out.println("Server ok");
                 clientSocket.close();
                 log.info("Socket closed: " + clientSocket.toString());
             }
