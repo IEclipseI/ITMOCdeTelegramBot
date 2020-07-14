@@ -14,6 +14,20 @@ public class Rosmira extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         log.debug("Received update: " + update);
+        if (update.hasEditedMessage() && update.getEditedMessage().hasText()) {
+            SendMessage sendMessage = new SendMessage()
+                    .setChatId(update.getMessage().getChatId())
+                    .setText(update.getEditedMessage().getText())
+                    .setReplyToMessageId(update.getEditedMessage().getMessageId());
+            try {
+                execute(sendMessage);
+                log.debug("Caught for hand: " + update.getMessage().getMessageId());
+
+            } catch (TelegramApiException e) {
+                log.error("Error on catching for hand: " + update.getMessage().getMessageId());
+                e.printStackTrace();
+            }
+        }
         if (update.hasMessage() && update.getMessage().hasText()) {
             SendMessage message = new SendMessage() // Create a SendMessage object with mandatory fields
                     .setChatId(update.getMessage().getChatId())
