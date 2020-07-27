@@ -1,1 +1,1 @@
-web: java -jar target/RosmiraBot-1.0-SNAPSHOT.jar
+web: java -jar target/rosmira-cde-bot-0.0.1-SNAPSHOT.jar
