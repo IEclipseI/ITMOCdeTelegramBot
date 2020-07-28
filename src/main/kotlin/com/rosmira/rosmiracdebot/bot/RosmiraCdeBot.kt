@@ -10,7 +10,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class RosmiraCdeBot(botOptions: DefaultBotOptions) : TelegramLongPollingCommandBot(botOptions), Logging {
     init {
+        logger.info("Registering commands")
         register(Signin())
+        logger.info("Commands registered")
     }
 
     override fun getBotUsername() = "RosmiraCdeBot"
