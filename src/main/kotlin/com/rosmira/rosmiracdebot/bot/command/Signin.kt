@@ -1,6 +1,6 @@
 package com.rosmira.rosmiracdebot.bot.command
 
-import com.rosmira.rosmiracdebot.repo.UserRepository
+import com.rosmira.rosmiracdebot.repo.CdeUserRepository
 import org.apache.logging.log4j.kotlin.Logging
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class Signin : BotCommand("signin", ""), Logging {
     @Inject
-    lateinit var userRepository: UserRepository
+    lateinit var cdeUserRepository: CdeUserRepository
 
     override fun execute(absSender: AbsSender, user: User, chat: Chat, args: Array<String>) {
         val stringBuilder = StringBuilder()
@@ -33,8 +33,8 @@ class Signin : BotCommand("signin", ""), Logging {
             } else {
                 val login = args[0]
                 val password = args[1]
-                userRepository
-                        .save(com.rosmira.rosmiracdebot.model.User(login, password, "", user.id.toString()))
+                cdeUserRepository
+                        .save(com.rosmira.rosmiracdebot.model.CdeUser(login, password, "", user.id.toString()))
                 val msg = SendMessage().setChatId(chat.id).setText("You signed in")
                 absSender.execute(msg)
             }

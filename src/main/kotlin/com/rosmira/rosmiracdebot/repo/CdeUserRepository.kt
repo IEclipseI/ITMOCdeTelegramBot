@@ -1,10 +1,10 @@
 package com.rosmira.rosmiracdebot.repo
 
-import com.rosmira.rosmiracdebot.model.User
+import com.rosmira.rosmiracdebot.model.CdeUser
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UserRepository: CrudRepository<User, Long> {
-    fun findUserByLogin(login: String): User?
+interface CdeUserRepository: CrudRepository<CdeUser, Long> {
+    fun findCdeUserByLogin(login: String): CdeUser?
 }
