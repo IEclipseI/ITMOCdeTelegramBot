@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import javax.inject.Inject
 
-class Signin : BotCommand("signin", ""), Logging {
+class Signin : BotCommand("signin", "<login> <password>"), Logging {
     @Inject
     lateinit var cdeUserRepository: CdeUserRepository
 
