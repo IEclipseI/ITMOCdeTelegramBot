@@ -12,19 +12,19 @@ class Deployer : Logging {
     @PostConstruct
     fun startCdeBot() {
         try {
-            logger.info("App started");
-            ApiContextInitializer.init();
+            logger.info("App started")
+            ApiContextInitializer.init()
 
-            val botsApi = TelegramBotsApi();
+            val botsApi = TelegramBotsApi()
 
             try {
-                botsApi.registerBot(RosmiraCdeBot());
+                botsApi.registerBot(RosmiraCdeBot())
             } catch (e: TelegramApiException) {
-                e.printStackTrace();
+                logger.error("Cannot register bot: ${e.stackTrace}")
             }
-            logger.info("App down")
         } catch (e: Exception) {
-            logger.error("APP CRASHED")
+            logger.error("APP CRASHED: ${e.stackTrace}")
+
         }
     }
 }

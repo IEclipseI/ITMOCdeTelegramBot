@@ -12,6 +12,7 @@ class RosmiraCdeBot: TelegramLongPollingBot(), Logging {
     override fun getBotToken(): String = System.getenv("BOT_TOKEN")
 
     override fun onUpdateReceived(update: Update) {
+        logger.info("Received update: $update")
         if (update.hasEditedMessage() && update.editedMessage.hasText()) {
             val sendMessage = SendMessage()
                     .setChatId(update.editedMessage.chatId)
@@ -19,23 +20,27 @@ class RosmiraCdeBot: TelegramLongPollingBot(), Logging {
                     .setReplyToMessageId(update.editedMessage.messageId)
             try {
                 execute(sendMessage)
-                logger.debug("Caught for hand: " + update.message.messageId)
+                logger.info("Caught for hand: ${update.editedMessage.messageId}")
             } catch (e: TelegramApiException) {
-                logger.error("Error on catching for hand: " + update.message.messageId)
+                logger.error("Error on catching for hand: ${update.editedMessage.messageId}")
                 e.printStackTrace()
             }
         }
         if (update.hasMessage() && update.message.hasText()) {
-            val message = SendMessage() // Create a SendMessage object with mandatory fields
+            val message = SendMessage()
                     .setChatId(update.message.chatId)
                     .setText(update.message.text)
             try {
                 execute(message)
-                logger.debug("Answer sent for message: " + update.message.messageId)
+                logger.info("Answer sent for message: ${update.message.messageId}")
             } catch (e: TelegramApiException) {
-                logger.error("Error on response for message: " + update.message.messageId)
+                logger.error("Error on response for message: ${update.message.messageId}")
                 e.printStackTrace()
             }
         }
     }
+
+//    fun isLoginIn(update: Update): Boolean {
+//        if (update.)
+//    }
 }
