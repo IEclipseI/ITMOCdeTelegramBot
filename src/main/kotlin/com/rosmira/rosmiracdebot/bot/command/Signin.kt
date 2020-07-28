@@ -3,7 +3,7 @@ package com.rosmira.rosmiracdebot.bot.command
 import com.rosmira.rosmiracdebot.repo.CdeUserRepository
 import org.apache.logging.log4j.kotlin.Logging
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Controller
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Chat
@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.bots.AbsSender
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
-@Component
+@Controller
 class Signin @Autowired constructor(private val cdeUserRepository: CdeUserRepository)
     : BotCommand("signin", "<login> <password>"), Logging {
 
