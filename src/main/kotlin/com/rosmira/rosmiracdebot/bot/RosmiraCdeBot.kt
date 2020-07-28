@@ -1,6 +1,6 @@
 package com.rosmira.rosmiracdebot.bot
 
-import com.rosmira.rosmiracdebot.bot.command.Login
+import com.rosmira.rosmiracdebot.bot.command.Signin
 import org.apache.logging.log4j.kotlin.Logging
 import org.telegram.telegrambots.bots.DefaultBotOptions
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot
@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class RosmiraCdeBot(botOptions: DefaultBotOptions) : TelegramLongPollingCommandBot(botOptions), Logging {
     init {
-        register(Login())
+        register(Signin())
     }
 
     override fun getBotUsername() = "RosmiraCdeBot"
