@@ -41,7 +41,7 @@ class Signin: BotCommand("signin", "<login> <password>"), Logging {
                 absSender.execute(msg)
             }
         } catch (e: TelegramApiException) {
-            logger.error("Cannot send response: ${e.stackTrace}")
+            logger.error("Cannot send response: ", e)
         }
     }
 }

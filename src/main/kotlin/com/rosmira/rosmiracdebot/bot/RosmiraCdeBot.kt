@@ -52,8 +52,7 @@ class RosmiraCdeBot(botOptions: DefaultBotOptions) : TelegramLongPollingCommandB
                 execute(message)
                 logger.info("Answer sent for message: ${update.message.messageId}")
             } catch (e: TelegramApiException) {
-                logger.error("Error on response for message: ${update.message.messageId}")
-                e.printStackTrace()
+                logger.error("Error on response for message: ${update.message.messageId}; ", e)
             }
         }
     }

@@ -21,10 +21,10 @@ class Deployer : Logging {
             try {
                 botsApi.registerBot(RosmiraCdeBot(DefaultBotOptions()))
             } catch (e: TelegramApiException) {
-                logger.error("Cannot register bot: ${e.stackTrace}")
+                logger.error("Cannot register bot: ", e)
             }
         } catch (e: Exception) {
-            logger.error("APP CRASHED: ${e.stackTrace}")
+            logger.error("APP CRASHED: ", e)
         }
     }
 }
