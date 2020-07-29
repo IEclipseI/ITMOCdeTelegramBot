@@ -36,7 +36,7 @@ class Signin: BotCommand("signin", "<login> <password>"), Logging {
                 val login = args[0]
                 val password = args[1]
                 cdeUserRepository
-                        .save(com.rosmira.rosmiracdebot.model.CdeUser(login, password, "", user.id.toString()))
+                        .save(com.rosmira.rosmiracdebot.model.CdeUser(login, password, "", user.id.toString() + login))
                 val msg = SendMessage().setChatId(chat.id).setText("You signed in")
                 absSender.execute(msg)
             }
