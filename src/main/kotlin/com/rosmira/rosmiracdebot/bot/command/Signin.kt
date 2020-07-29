@@ -13,12 +13,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
 class Signin: BotCommand("signin", "<login> <password>"), Logging {
-
-    @Component
-    companion object {
-        @Autowired
-        lateinit var cdeUserRepository: CdeUserRepository
-    }
+    @Autowired
+    lateinit var cdeUserRepository: CdeUserRepository
 
     override fun execute(absSender: AbsSender, user: User, chat: Chat, args: Array<String>) {
         val stringBuilder = StringBuilder()

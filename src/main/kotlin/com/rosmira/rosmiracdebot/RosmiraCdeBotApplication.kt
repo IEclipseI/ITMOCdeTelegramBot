@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class RosmiraCdeBotApplication
 
 fun main(args: Array<String>) {
-    val runApplication = runApplication<RosmiraCdeBotApplication>(*args)
+    runApplication<RosmiraCdeBotApplication>(*args)
 }

@@ -1,18 +1,41 @@
 package com.rosmira.rosmiracdebot.bot
 
+import com.rosmira.rosmiracdebot.SpringApplicationContext
 import com.rosmira.rosmiracdebot.bot.command.Signin
 import org.apache.logging.log4j.kotlin.Logging
 import org.telegram.telegrambots.bots.DefaultBotOptions
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.bots.AbsSender
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import kotlin.reflect.KClass
 
 class RosmiraCdeBot(botOptions: DefaultBotOptions) : TelegramLongPollingCommandBot(botOptions), Logging {
     init {
         logger.info("Registering commands")
-        register(Signin())
+        registerCommand(Signin::class)
+        registerDefaultAction(this::defaultCommand)
         logger.info("Commands registered")
+    }
+
+    private fun defaultCommand(absSender: AbsSender, message: Message) {
+        logger.info("Received unknown command: ${message.text ?: "<No Args>"}")
+        val sendMessage = SendMessage(message.chatId, "I don't know that command :(")
+        try {
+            absSender.execute(sendMessage)
+        } catch (e: TelegramApiException) {
+            logger.error("Can't send response: ${e.stackTrace}")
+        }
+    }
+
+    private fun <T : BotCommand> registerCommand(kClass: KClass<T>) {
+        logger.info("Registering command: ${kClass.simpleName}")
+        val bean = SpringApplicationContext.getContext().getBean(kClass.java)
+        register(bean)
+        logger.info("Command registered: ${kClass.simpleName}")
     }
 
     override fun getBotUsername() = "RosmiraCdeBot"
@@ -21,19 +44,6 @@ class RosmiraCdeBot(botOptions: DefaultBotOptions) : TelegramLongPollingCommandB
 
     override fun processNonCommandUpdate(update: Update) {
         logger.info("Received update: $update")
-        if (update.hasEditedMessage() && update.editedMessage.hasText()) {
-            val sendMessage = SendMessage()
-                    .setChatId(update.editedMessage.chatId)
-                    .setText(update.editedMessage.text)
-                    .setReplyToMessageId(update.editedMessage.messageId)
-            try {
-                execute(sendMessage)
-                logger.info("Caught for hand: ${update.editedMessage.messageId}")
-            } catch (e: TelegramApiException) {
-                logger.error("Error on catching for hand: ${update.editedMessage.messageId}")
-                e.printStackTrace()
-            }
-        }
         if (update.hasMessage() && update.message.hasText()) {
             val message = SendMessage()
                     .setChatId(update.message.chatId)
