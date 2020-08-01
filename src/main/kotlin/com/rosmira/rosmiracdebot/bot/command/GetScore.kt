@@ -28,7 +28,7 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.collections.ArrayList
 
 @Component
-class GetScore : BotCommand("getscore", ""), Logging {
+class GetScore : BotCommand("getmarks", ""), Logging {
     @Autowired
     lateinit var cdeUserService: CdeUserService
 
@@ -77,7 +77,7 @@ class GetScore : BotCommand("getscore", ""), Logging {
                             if (row.getElementsByClass("td_vmenu_left").isNotEmpty()) {
                                 val replace =
                                         row.child(2).text().replace("(\\([\\s\\S]*\\))".toRegex(), "")
-                                responseMsg.append(String.format("%-30.30s", replace) + " " + row.child(3).text())
+                                responseMsg.append(String.format("%-30.30s", replace) + "–" + row.child(3).text() + "\n")
                             }
                         }
                         val msg = SendMessage().setChatId(chat.id).setText(responseMsg.toString())
