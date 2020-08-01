@@ -77,7 +77,7 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                             if (row.getElementsByClass("td_vmenu_left").isNotEmpty()) {
                                 val replace =
                                         row.child(2).text().replace("(\\([\\s\\S]*\\))".toRegex(), "")
-                                responseMsg.append(String.format("%-30.30s", replace) + "–" + row.child(3).text() + "\n")
+                                responseMsg.append(String.format("%-30.30s", replace) + " – " + row.child(3).text() + "\n")
                             }
                         }
                         val msg = SendMessage().setChatId(chat.id).setText(responseMsg.toString())
