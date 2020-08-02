@@ -33,7 +33,7 @@ class GetScore : BotCommand("getmarks", ""), Logging {
     lateinit var cdeUserService: CdeUserService
 
     override fun execute(absSender: AbsSender, user: User, chat: Chat, args: Array<String>) {
-        logger.info("Received getscore request")
+        logger.info("Received $commandIdentifier request")
         val cdeUser = cdeUserService.getCdeUserByTgUserId(user.id.toString())
         cdeUser ?. let {
             val context = HttpClientContext.create()
@@ -72,7 +72,7 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                         val body = marks.entity.body
                         val find = Regex("(<form id=\"FormName\">)([\\s\\S]*)(</form>)").find(body)?.value ?: ""
                         val rows = Jsoup.parse(find).select("tr")
-                        val responseMsg = StringBuilder()
+                        val responseMsg = StringBuilder().append('`')
                         for (row in rows) {
                             if (row.getElementsByClass("td_vmenu_left").isNotEmpty()) {
                                 val replace =
@@ -80,7 +80,9 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                                 responseMsg.append(String.format("%-30.30s", replace) + " – " + row.child(3).text() + "\n")
                             }
                         }
-                        val msg = SendMessage().setChatId(chat.id).setText(responseMsg.toString())
+                        responseMsg.append('`')
+                        val msg =
+                                SendMessage().setChatId(chat.id).setText(responseMsg.toString()).setParseMode("Markdown")
                         absSender.execute(msg)
                     } else {
                         print("Something goes wrong")
