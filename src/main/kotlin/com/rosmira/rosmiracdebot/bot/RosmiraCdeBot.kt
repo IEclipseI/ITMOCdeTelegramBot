@@ -35,7 +35,7 @@ class RosmiraCdeBot(botOptions: DefaultBotOptions) : TelegramLongPollingCommandB
 
     private fun <T : BotCommand> registerCommand(kClass: KClass<T>) {
         logger.info("Registering command: ${kClass.simpleName}")
-        val bean = SpringApplicationContext.getContext().getBean(kClass.java)
+        val bean = SpringApplicationContext.getBean(kClass)
         register(bean)
         logger.info("Command registered: ${kClass.simpleName}")
     }
