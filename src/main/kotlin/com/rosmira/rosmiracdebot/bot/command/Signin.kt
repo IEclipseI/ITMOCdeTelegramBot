@@ -53,7 +53,7 @@ class Signin : BotCommand("signin", "<login> <password>"), Logging {
 
                     SendMessage().setChatId(chat.id).setText(
                         """
-|                       You signed in.
+                        You signed in.
                         Now you can use commands.
                         """.trimIndent()
                     )
