@@ -1,17 +1,16 @@
 package com.rosmira.rosmiracdebot.bot.command
 
+import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.ANTID_REGEX
+import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.FORM_REGEX
+import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.MARKS_PAGE
+import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.SHOWORKSPACE_PAGE
+import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.body
+import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.client
+import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.decryptPas
+import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.signin
 import com.rosmira.rosmiracdebot.service.CdeUserService
-import org.apache.http.Consts
-import org.apache.http.HttpEntity
-import org.apache.http.NameValuePair
-import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.protocol.HttpClientContext
-import org.apache.http.entity.ContentType
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.message.BasicNameValuePair
-import org.apache.http.util.EntityUtils
 import org.apache.logging.log4j.kotlin.Logging
 import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,11 +20,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Chat
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.bots.AbsSender
-import java.util.*
-import javax.crypto.Cipher
-import javax.crypto.SecretKey
-import javax.crypto.spec.SecretKeySpec
-import kotlin.collections.ArrayList
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import java.io.IOException
 
 @Component
 class GetScore : BotCommand("getmarks", ""), Logging {
@@ -35,82 +31,75 @@ class GetScore : BotCommand("getmarks", ""), Logging {
     override fun execute(absSender: AbsSender, user: User, chat: Chat, args: Array<String>) {
         logger.info("Received $commandIdentifier request")
         val cdeUser = cdeUserService.getCdeUserByTgUserId(user.id.toString())
-        cdeUser ?. let {
-            val context = HttpClientContext.create()
-            HttpClients.createDefault()?.use {
-                val signin = HttpGet("https://de.ifmo.ru/?node=signin")
-                it.execute(signin, context)
-
-                val form: MutableList<NameValuePair> = ArrayList()
-                form.add(BasicNameValuePair("Rule", "LOGON"))
-                form.add(BasicNameValuePair("LOGIN", cdeUser.login))
-                form.add(BasicNameValuePair("PASSWD", decryptPas(cdeUser.password)))
-                val formEntity = UrlEncodedFormEntity(form, Consts.UTF_8)
-
-                val httpPost = HttpPost("https://de.ifmo.ru/servlet/")
-                httpPost.entity = formEntity
-                val logined = it.execute(httpPost, context);
-                val entity = logined.entity;
-
-                val content = entity.body
-                if (content.contains("Access is forbidden")) {
-                    println("""
-                    Access is forbidden.
-                    Possibly invalid login or password.
-                """.trimIndent())
+        cdeUser?.also {
+            try {
+                val context = HttpClientContext.create()
+                if (!signin(it.login, decryptPas(it.password), context)) {
+                    val msg = SendMessage().setChatId(chat.id).setText(
+                        """
+                        Access is forbidden.
+                        Possibly invalid login or password.
+                        """.trimIndent())
+                    absSender.execute(msg)
                 } else {
-
-                    val workspace =
-                            it.execute(HttpGet("https://de.ifmo.ru/servlet/distributedCDE?Rule=ShowWorkSpace"));
-                    val workspacePage = workspace.entity.body
-                    val antId: String =
-                            Regex("ANTID=[^\"]*").find(workspacePage)?.value ?: ""
+                    val workspacePage = client.execute(HttpGet(SHOWORKSPACE_PAGE), context).entity.body
+                    val antId: String = Regex(ANTID_REGEX).find(workspacePage)?.value ?: ""
 
                     if (antId.isNotEmpty()) {
-                        val marks =
-                                it.execute(HttpGet("https://de.ifmo.ru/servlet/distributedCDE?Rule=eRegister&$antId"))
-                        val body = marks.entity.body
-                        val find = Regex("(<form id=\"FormName\">)([\\s\\S]*)(</form>)").find(body)?.value ?: ""
-                        val rows = Jsoup.parse(find).select("tr")
-                        val responseMsg = StringBuilder().append('`')
-                        for (row in rows) {
-                            if (row.getElementsByClass("td_vmenu_left").isNotEmpty()) {
-                                val replace =
-                                        row.child(2).text().replace("(\\([\\s\\S]*\\))".toRegex(), "")
-                                responseMsg.append(String.format("%-30.30s", replace) + " – " + row.child(3).text() + "\n")
-                            }
-                        }
-                        responseMsg.append('`')
+                        val marksPage =
+                            client.execute(HttpGet(MARKS_PAGE + antId), context)
+                        val marks = parseMarks(marksPage.entity.body)
+
                         val msg =
-                                SendMessage().setChatId(chat.id).setText(responseMsg.toString()).setParseMode("Markdown")
+                            SendMessage().setChatId(chat.id).setText(marks).setParseMode("Markdown")
                         absSender.execute(msg)
                     } else {
                         print("Something goes wrong")
                     }
-                    val exit = HttpGet("https://de.ifmo.ru/servlet/distributedCDE?Rule=SYSTEM_EXIT");
-                    it.execute(exit, context);
+                    val exit = HttpGet("https://de.ifmo.ru/servlet/distributedCDE?Rule=SYSTEM_EXIT")
+                    client.execute(exit, context)
                 }
+            } catch (e: TelegramApiException) {
+                logger.error(e)
+            } catch (e: IOException) {
+                try {
+                    absSender.execute(SendMessage().setChatId(chat.id).setText(
+                        """
+                        Something goes wrong.
+                        Please try later.
+                        """.trimIndent()))
+                } catch (f: TelegramApiException) {
+                    logger.error("Cannot send response for $commandIdentifier-command: ", f)
+                }
+                logger.error(e)
+            }
+        } ?: run {
+            try {
+                absSender.execute(SendMessage().setChatId(chat.id).setText(
+                    """
+                    To use commands you must sign in firstly:
+                    /signin CDE_LOGIN CDE_PASSWORD
+                    """.trimIndent()
+                ))
+            } catch (e: TelegramApiException) {
+                logger.error("Cannot send response for $commandIdentifier-command: ", e)
             }
         }
     }
 
-    private fun decryptPas(password: String): String {
-        val decodeBase64 = Base64.getDecoder().decode(password)
-        val secretKey = getSecretKey()
-        val instance = Cipher.getInstance("AES/ECB/PKCS5Padding")
-        instance.init(Cipher.DECRYPT_MODE, secretKey)
-        return String(instance.doFinal(decodeBase64))
-    }
-
-    private fun getSecretKey(): SecretKey {
-        val decodedSecretKey = System.getenv("SECRET_KEY")
-        val secretKey = Base64.getDecoder().decode(decodedSecretKey)
-        return SecretKeySpec(secretKey, "AES")
-    }
-
-    private val HttpEntity.body: String
-        get() {
-            return EntityUtils.toString(this, ContentType.getOrDefault(this).charset)
+    fun parseMarks(body: String): String {
+        val find = Regex(FORM_REGEX).find(body)?.value ?: ""
+        val rows = Jsoup.parse(find).select("tr")
+        val responseMsg = StringBuilder("`")
+        for (row in rows) {
+            if (row.getElementsByClass("td_vmenu_left").isNotEmpty()) {
+                val replace =
+                    row.child(2).text().replace("(\\([\\s\\S]*\\))".toRegex(), "")
+                responseMsg
+                    .append(String.format("%-30.30s", replace) + " – " + row.child(3).text() + "\n")
+            }
         }
-
+        return responseMsg.append('`').toString()
+    }
 }
+
