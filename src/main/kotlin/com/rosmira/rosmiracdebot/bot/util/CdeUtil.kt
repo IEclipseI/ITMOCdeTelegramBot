@@ -3,10 +3,12 @@ package com.rosmira.rosmiracdebot.bot.util
 import org.apache.http.Consts
 import org.apache.http.HttpEntity
 import org.apache.http.NameValuePair
+import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.protocol.HttpClientContext
 import org.apache.http.entity.ContentType
+import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
@@ -17,7 +19,14 @@ import javax.crypto.spec.SecretKeySpec
 
 class CdeUtil {
     companion object {
-        val client = HttpClients.createDefault()
+        val client: CloseableHttpClient = HttpClients.custom()
+            .setDefaultRequestConfig(
+                RequestConfig.custom()
+                    .setConnectTimeout(1000)
+                    .setConnectionRequestTimeout(1000)
+                    .setSocketTimeout(1000)
+                    .build())
+            .build()
 
         const val SIGNIN_PAGE = "https://de.ifmo.ru/?node=signin"
         const val SIGNIN_SERVLET = "https://de.ifmo.ru/servlet/"

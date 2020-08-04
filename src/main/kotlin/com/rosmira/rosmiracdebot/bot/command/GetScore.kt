@@ -1,9 +1,7 @@
 package com.rosmira.rosmiracdebot.bot.command
 
-import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.ANTID_REGEX
 import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.FORM_REGEX
 import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.MARKS_PAGE
-import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.SHOWORKSPACE_PAGE
 import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.body
 import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.client
 import com.rosmira.rosmiracdebot.bot.util.CdeUtil.Companion.decryptPas
@@ -42,20 +40,12 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                         """.trimIndent())
                     absSender.execute(msg)
                 } else {
-                    val workspacePage = client.execute(HttpGet(SHOWORKSPACE_PAGE), context).entity.body
-                    val antId: String = Regex(ANTID_REGEX).find(workspacePage)?.value ?: ""
-
-                    if (antId.isNotEmpty()) {
-                        val marksPage =
-                            client.execute(HttpGet(MARKS_PAGE + antId), context)
-                        val marks = parseMarks(marksPage.entity.body)
-
-                        val msg =
-                            SendMessage().setChatId(chat.id).setText(marks).setParseMode("Markdown")
-                        absSender.execute(msg)
-                    } else {
-                        print("Something goes wrong")
-                    }
+                    val marksPage =
+                        client.execute(HttpGet(MARKS_PAGE + it.antId), context)
+                    val marks = parseMarks(marksPage.entity.body)
+                    val msg =
+                        SendMessage().setChatId(chat.id).setText(marks).setParseMode("Markdown")
+                    absSender.execute(msg)
                     val exit = HttpGet("https://de.ifmo.ru/servlet/distributedCDE?Rule=SYSTEM_EXIT")
                     client.execute(exit, context)
                 }

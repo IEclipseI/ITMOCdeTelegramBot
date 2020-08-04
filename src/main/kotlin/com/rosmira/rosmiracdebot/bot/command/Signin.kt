@@ -32,8 +32,8 @@ class Signin : BotCommand("signin", "<login> <password>"), Logging {
             if (args.size != 2) {
                 val notEnoughArgs = SendMessage().setChatId(chat.id).setText(
                     """
-|                   Command requires two arguments:
-|                   /signin CDE_LOGIN CDE_PASSWORD
+                    Command requires two arguments:
+                    /signin CDE_LOGIN CDE_PASSWORD
                     """.trimIndent()
                 )
                 absSender.execute(notEnoughArgs)
