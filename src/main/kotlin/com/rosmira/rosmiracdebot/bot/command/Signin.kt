@@ -75,7 +75,7 @@ class Signin : BotCommand("signin", "<login> <password>"), Logging {
             } catch (f: TelegramApiException) {
                 logger.error("Cannot send response for $commandIdentifier-command: ", f)
             }
-            logger.error(e)
+            logger.error(e, e)
         }
     }
 }

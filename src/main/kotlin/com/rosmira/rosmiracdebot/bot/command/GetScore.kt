@@ -50,7 +50,7 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                     client.execute(exit, context)
                 }
             } catch (e: TelegramApiException) {
-                logger.error(e)
+                logger.error(e, e)
             } catch (e: IOException) {
                 try {
                     absSender.execute(SendMessage().setChatId(chat.id).setText(
@@ -61,7 +61,7 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                 } catch (f: TelegramApiException) {
                     logger.error("Cannot send response for $commandIdentifier-command: ", f)
                 }
-                logger.error(e)
+                logger.error(e, e)
             }
         } ?: run {
             try {
