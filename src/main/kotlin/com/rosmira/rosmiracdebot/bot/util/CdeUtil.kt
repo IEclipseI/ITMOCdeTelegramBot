@@ -22,13 +22,12 @@ class CdeUtil {
         val client: CloseableHttpClient = HttpClients.custom()
             .setDefaultRequestConfig(
                 RequestConfig.custom()
-                    .setConnectTimeout(1000)
-                    .setConnectionRequestTimeout(1000)
-                    .setSocketTimeout(1000)
+                    .setConnectTimeout(2000)
+                    .setConnectionRequestTimeout(2000)
+                    .setSocketTimeout(2000)
                     .build())
             .build()
 
-        const val SIGNIN_PAGE = "https://de.ifmo.ru/?node=signin"
         const val SIGNIN_SERVLET = "https://de.ifmo.ru/servlet/"
         const val SHOWORKSPACE_PAGE = "https://de.ifmo.ru/servlet/distributedCDE?Rule=ShowWorkSpace"
         const val MARKS_PAGE = "https://de.ifmo.ru/servlet/distributedCDE?Rule=eRegister&"
@@ -47,7 +46,7 @@ class CdeUtil {
             return !content.contains("Access is forbidden")
         }
 
-        fun signinForm(login: String, password: String): UrlEncodedFormEntity {
+        private fun signinForm(login: String, password: String): UrlEncodedFormEntity {
             val form: MutableList<NameValuePair> = ArrayList()
             form.add(BasicNameValuePair("Rule", "LOGON"))
             form.add(BasicNameValuePair("LOGIN", login))

@@ -46,8 +46,6 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                     val msg =
                         SendMessage().setChatId(chat.id).setText(marks).setParseMode("Markdown")
                     absSender.execute(msg)
-                    val exit = HttpGet("https://de.ifmo.ru/servlet/distributedCDE?Rule=SYSTEM_EXIT")
-                    client.execute(exit, context)
                 }
             } catch (e: TelegramApiException) {
                 logger.error(e, e)
