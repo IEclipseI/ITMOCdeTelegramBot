@@ -1,4 +1,4 @@
-package com.rosmira.rosmiracdebot.bot
+package com.rosmira.rosmiracdebot.control
 
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController

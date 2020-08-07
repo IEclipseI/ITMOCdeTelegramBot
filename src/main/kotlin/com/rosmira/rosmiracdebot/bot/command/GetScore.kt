@@ -79,7 +79,16 @@ class GetScore : BotCommand("getmarks", ""), Logging {
         val find = Regex(FORM_REGEX).find(body)?.value ?: ""
         val rows = Jsoup.parse(find).select("tr")
         val responseMsg = StringBuilder("`")
+        var wasTerm = false
         for (row in rows) {
+            if (row.getElementsByTag("th").isNotEmpty()) {
+                if (wasTerm)
+                    responseMsg.append('\n')
+                row.getElementsByTag("th").firstOrNull()?.let {
+                    responseMsg.append(it.text() + "\n")
+                }
+                wasTerm = true
+            }
             if (row.getElementsByClass("td_vmenu_left").isNotEmpty()) {
                 val replace =
                     row.child(2).text().replace("(\\([\\s\\S]*\\))".toRegex(), "")

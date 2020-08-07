@@ -1,5 +1,6 @@
-package com.rosmira.rosmiracdebot.bot
+package com.rosmira.rosmiracdebot.control
 
+import com.rosmira.rosmiracdebot.bot.RosmiraCdeBot
 import org.apache.logging.log4j.kotlin.Logging
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.event.EventListener
