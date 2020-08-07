@@ -87,7 +87,7 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                         responseMsg.append('\n')
                     val term = "Семестр " + it.text().drop("Семестр".length)
 
-                    responseMsg.append(String.format("%-26.26s", " ".repeat(term.length / 2) + term) + "\n")
+                    responseMsg.append(String.format("%-26.26s", " ".repeat(13) + term) + "\n")
                     wasTerm = true
                 }
             }
