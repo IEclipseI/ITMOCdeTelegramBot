@@ -85,7 +85,9 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                 row.getElementsContainingText("Семестр").firstOrNull()?.let {
                     if (wasTerm)
                         responseMsg.append('\n')
-                    responseMsg.append(it.text() + "\n")
+                    val term = "Семестр " + it.text().drop("Семестр".length)
+
+                    responseMsg.append(String.format("%-26.26s", " ".repeat(term.length / 2) + term) + "\n")
                     wasTerm = true
                 }
             }
@@ -93,7 +95,7 @@ class GetScore : BotCommand("getmarks", ""), Logging {
                 val replace =
                     row.child(2).text().replace("(\\([\\s\\S]*\\))".toRegex(), "")
                 responseMsg
-                    .append(String.format("%-30.30s", replace) + " – " + row.child(3).text() + "\n")
+                    .append(String.format("%-26.26s", replace) + " – " + row.child(3).text() + "\n")
             }
         }
         return responseMsg.append('`').toString()
