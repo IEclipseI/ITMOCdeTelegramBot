@@ -2,6 +2,7 @@ package com.rosmira.rosmiracdebot.bot
 
 import com.rosmira.rosmiracdebot.SpringApplicationContext
 import com.rosmira.rosmiracdebot.bot.command.GetScore
+import com.rosmira.rosmiracdebot.bot.command.Help
 import com.rosmira.rosmiracdebot.bot.command.Signin
 import org.apache.logging.log4j.kotlin.Logging
 import org.telegram.telegrambots.bots.DefaultBotOptions
@@ -19,6 +20,7 @@ class RosmiraCdeBot(botOptions: DefaultBotOptions) : TelegramLongPollingCommandB
         logger.info("Registering commands")
         registerCommand(Signin::class)
         registerCommand(GetScore::class)
+        registerCommand(Help::class)
         registerDefaultAction(this::defaultCommand)
         logger.info("Commands registered")
     }
