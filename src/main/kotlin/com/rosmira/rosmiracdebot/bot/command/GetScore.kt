@@ -81,13 +81,13 @@ class GetScore : BotCommand("getmarks", ""), Logging {
         val responseMsg = StringBuilder("`")
         var wasTerm = false
         for (row in rows) {
-            if (row.getElementsByTag("th").isNotEmpty()) {
-                if (wasTerm)
-                    responseMsg.append('\n')
-                row.getElementsByTag("th").firstOrNull()?.let {
+            if (row.getElementsContainingText("Семестр").isNotEmpty()) {
+                row.getElementsContainingText("Семестр").firstOrNull()?.let {
+                    if (wasTerm)
+                        responseMsg.append('\n')
                     responseMsg.append(it.text() + "\n")
+                    wasTerm = true
                 }
-                wasTerm = true
             }
             if (row.getElementsByClass("td_vmenu_left").isNotEmpty()) {
                 val replace =
